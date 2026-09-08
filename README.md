@@ -10,13 +10,28 @@ The project demonstrates practical application of **React component-based archit
 
 ## 📌 Project Information
 
-**Project Name:** QuizMaster  
-**Project Type:** College / Academic Web Development Project  
-**Application Type:** Single Page Application (SPA)  
-**Frontend:** React.js  
-**Build Tool:** Vite  
-**Language:** JavaScript / JSX  
-**Data Storage:** Browser Local Storage  
+| | |
+|---|---|
+| **Project Name** | QuizMaster |
+| **Project Type** | College / Academic Web Development Project |
+| **Application Type** | Single Page Application (SPA) |
+| **Frontend** | React.js |
+| **Build Tool** | Vite |
+| **Language** | JavaScript / JSX |
+| **Data Storage** | Browser Local Storage |
+
+---
+
+## 👥 Team Members
+
+| Name | Role |
+|---|---|
+| **Tejus Pathania** | **Team Leader** |
+| **Anish Kumar** | Team Member |
+| **Ranteg Singh Virk** | Team Member |
+| **Anmol** | Team Member |
+
+> This project was developed collaboratively as a college academic project.
 
 ---
 
@@ -33,6 +48,7 @@ The main objectives of QuizMaster are to:
 - Store quiz attempt records locally and display performance statistics.
 - Provide an intuitive and responsive user interface.
 - Apply modular project organization and reusable utility functions.
+- Gain practical experience with collaborative development using Git and GitHub.
 
 ---
 
@@ -50,7 +66,7 @@ The application validates the required selections before starting the quiz.
 
 ### 2. Timed Questions ⏱️
 
-Each question has a **20-second timer**. When the timer expires, the question is automatically recorded as unanswered and the application can move to the next question automatically.
+Each question has a **20-second timer**. When the timer expires, the question is recorded as unanswered and the application can automatically move to the next question.
 
 ### 3. Multiple-Choice Questions
 
@@ -67,7 +83,7 @@ Users can:
 
 ### 5. Flag Questions for Review 🚩
 
-Users can mark questions for review. The quiz sidebar shows how many questions are currently flagged.
+Users can mark questions for review. The quiz sidebar keeps track of flagged questions and the review screen can filter marked questions.
 
 ### 6. Quiz Progress Tracking
 
@@ -94,15 +110,17 @@ After completing a quiz, QuizMaster calculates and displays:
 - Overall score percentage.
 - Answer accuracy.
 - Total time taken.
+- Average time per question.
+- Performance grade.
 - Personal-best status.
 
-### 9. Answer Review
+### 9. Detailed Answer Review
 
-Users can review the questions after completing the quiz and inspect their selected answers along with question explanations.
+Users can review every question after completing a quiz. The review interface identifies correct, incorrect, skipped/timed-out, and marked questions and shows the correct answer, user's answer, and available explanation.
 
 ### 10. Retry Wrong Questions 🔄
 
-QuizMaster allows users to retry only the questions they answered incorrectly or left unanswered, making it useful for focused practice.
+QuizMaster allows users to retry only the questions they answered incorrectly or left unanswered, providing a focused practice mode.
 
 ### 11. Attempt History 🏆
 
@@ -119,7 +137,7 @@ Quiz attempts are stored locally in the browser. The history section provides:
 
 ### 12. Personal Best Tracking
 
-The application identifies and highlights the user's highest-performing attempt and displays it on the quiz configuration and history screens.
+The application identifies and highlights the user's highest-performing attempt and displays personal-best information on relevant screens.
 
 ### 13. Responsive User Interface 📱
 
@@ -166,7 +184,7 @@ QuizMaster follows a modular React architecture in which application screens, re
 ### Main architectural areas
 
 - **Routes / Screens** – Handle major application views such as configuration, quiz, results, and history.
-- **Components** – Reusable UI building blocks.
+- **Components** – Reusable UI building blocks such as question cards, option buttons, timers, progress bars, question palettes, result summaries, and review lists.
 - **Hooks** – Encapsulate reusable React logic such as question selection and quiz timing.
 - **Data** – Contains categories, difficulty levels, question counts, and quiz questions.
 - **Utils** – Provides helper functions and browser storage operations.
@@ -196,6 +214,10 @@ QuizMaster/
 │   │   ├── OptionButton.jsx
 │   │   ├── ProgressBar.jsx
 │   │   ├── QuestionCard.jsx
+│   │   ├── QuestionPalette.jsx
+│   │   ├── ResultSummary.jsx
+│   │   ├── ReviewList.jsx
+│   │   ├── Timer.jsx
 │   │   └── ...
 │   │
 │   ├── data/
@@ -245,16 +267,17 @@ QuizMaster/
 | **Tailwind CSS** | Utility-based styling support |
 | **CSS** | Custom application styling and responsive layouts |
 | **Local Storage** | Persistent storage of quiz attempt history |
-| **Axios** | HTTP client available for application requests |
+| **Axios** | HTTP client available in the project |
 | **ESLint** | Code quality and linting |
 | **Canvas Confetti** | Celebration effect for high quiz scores |
 | **npm** | Dependency and package management |
+| **Git & GitHub** | Version control and collaborative development |
 
 ---
 
 ## 🔧 React Concepts Demonstrated
 
-This project was developed to demonstrate several important React concepts:
+This project demonstrates several important React concepts:
 
 ### Components
 
@@ -274,7 +297,7 @@ React's `useState` is used to manage quiz configuration, selected answers, curre
 
 ### Memoization
 
-`useMemo` is used where derived data is calculated from existing state, such as statistics and filtered results.
+`useMemo` is used for derived data such as statistics, filtered results, and question selection.
 
 ### Custom Hooks
 
@@ -305,7 +328,7 @@ If there are not enough matching questions, the application progressively expand
 4. Any Remaining Questions
 ```
 
-Questions and their answer options are shuffled so that quiz attempts are not presented in the same order every time.
+Questions and answer options are shuffled so that quiz attempts are not presented in the same order every time.
 
 ---
 
@@ -323,8 +346,6 @@ Stored information includes values such as:
 - Time taken.
 - Attempt date.
 - Personal-best status.
-
-This allows users to close or refresh the page without losing their locally stored attempt history.
 
 > **Note:** Because the application uses browser Local Storage rather than a backend database, attempt history is specific to the browser/device being used.
 
@@ -393,9 +414,9 @@ Runs ESLint to identify code-quality issues.
 
 ---
 
-## 🧪 Testing the Application
+## 🧪 Testing & Evaluation Checklist
 
-A simple manual testing flow for evaluation is:
+A simple manual testing flow for project evaluation is:
 
 1. Open the application.
 2. Select a category, difficulty, and question count.
@@ -404,18 +425,20 @@ A simple manual testing flow for evaluation is:
 5. Select correct and incorrect options and verify feedback.
 6. Try skipping and moving between questions.
 7. Flag one or more questions.
-8. Submit the quiz, including with unanswered questions.
-9. Verify score, accuracy, skipped count, and total time.
-10. Open answer review.
-11. Retry wrong questions.
-12. Open attempt history and verify the saved record and statistics.
-13. Test deleting a record and clearing the history.
+8. Use the question palette to jump between questions.
+9. Submit the quiz with and without unanswered questions.
+10. Verify score, grade, accuracy, skipped count, and total time.
+11. Open the detailed answer review.
+12. Filter the review by incorrect, skipped, or marked questions.
+13. Retry wrong questions.
+14. Open attempt history and verify the saved record and statistics.
+15. Test deleting an individual record and clearing the history.
 
 ---
 
 ## 🎓 Academic Learning Outcomes
 
-Through this project, the following practical skills are demonstrated:
+Through this project, the team demonstrates practical skills in:
 
 - Frontend application development using React.js.
 - Component-based software design.
@@ -428,7 +451,7 @@ Through this project, the following practical skills are demonstrated:
 - Responsive UI development.
 - Code organization and modularity.
 - Basic linting and development workflow using npm and Vite.
-- Use of Git and GitHub for project version control.
+- Git and GitHub-based collaborative development.
 
 ---
 
@@ -458,10 +481,14 @@ The current version is focused on a frontend-only academic implementation. Possi
 
 ---
 
-## 👨‍💻 Author
+## 👨‍💻 Team
 
-**Tejus Pathania**  
-GitHub: [@Tejus6309](https://github.com/Tejus6309)
+**QuizMaster Development Team**
+
+- **Tejus Pathania** — Team Leader
+- **Anish Kumar** — Team Member
+- **Ranteg Singh Virk** — Team Member
+- **Anmol** — Team Member
 
 ---
 
