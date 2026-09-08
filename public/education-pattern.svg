@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300" viewBox="0 0 300 300">
+  <style>
+    .edu-icon { fill: none; stroke: #0284c7; stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; opacity: 0.12; }
+    .edu-dot { fill: #0ea5e9; opacity: 0.14; }
+    .edu-accent { fill: none; stroke: #6366f1; stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; opacity: 0.10; }
+  </style>
+  
+  <!-- Graduation Cap -->
+  <g class="edu-icon" transform="translate(30, 30)">
+    <path d="M 0,20 L 30,5 L 60,20 L 30,35 Z"/>
+    <path d="M 12,26 V 42 C 12,48 48,48 48,42 V 26"/>
+    <path d="M 52,24 V 45 C 52,48 56,48 56,45 V 24"/>
+    <circle cx="56" cy="46" r="2.5" class="edu-dot"/>
+  </g>
+
+  <!-- Lightbulb -->
+  <g class="edu-accent" transform="translate(210, 30)">
+    <path d="M 20,5 A 16,16 0 0,1 36,21 C 36,28 30,32 29,38 H 11 C 10,32 4,28 4,21 A 16,16 0 0,1 20,5 Z"/>
+    <path d="M 13,44 H 27 M 15,49 H 25"/>
+    <path d="M 15,22 L 20,17 L 25,22"/>
+  </g>
+
+  <!-- Atom -->
+  <g class="edu-accent" transform="translate(35, 200)">
+    <ellipse cx="25" cy="25" rx="24" ry="9" transform="rotate(30 25 25)"/>
+    <ellipse cx="25" cy="25" rx="24" ry="9" transform="rotate(-30 25 25)"/>
+    <ellipse cx="25" cy="25" rx="24" ry="9" transform="rotate(90 25 25)"/>
+    <circle cx="25" cy="25" r="3.5" fill="#6366f1" opacity="0.2"/>
+  </g>
+
+  <!-- Book -->
+  <g class="edu-icon" transform="translate(200, 200)">
+    <path d="M 5,10 C 15,4 28,4 35,9 C 42,4 55,4 65,10 V 42 C 55,36 42,36 35,41 C 28,36 15,36 5,42 Z"/>
+    <path d="M 35,9 V 41"/>
+    <path d="M 12,18 H 28 M 12,25 H 24 M 42,18 H 58 M 42,25 H 54"/>
+  </g>
+
+  <!-- Question Mark -->
+  <g class="edu-icon" transform="translate(135, 120)">
+    <path d="M 5,12 C 5,4 25,4 25,16 C 25,26 15,28 15,38 M 15,47 V 48" stroke-width="2"/>
+  </g>
+
+  <!-- Compass / Geometry -->
+  <g class="edu-icon" transform="translate(125, 30)">
+    <path d="M 15,5 L 5,35 M 15,5 L 25,35 M 8,24 H 22"/>
+    <circle cx="15" cy="5" r="2.5"/>
+  </g>
+
+  <!-- Trophy / Award -->
+  <g class="edu-icon" transform="translate(225, 120)">
+    <path d="M 8,5 H 32 V 22 C 32,29 26,35 20,35 C 14,35 8,29 8,22 Z"/>
+    <path d="M 8,10 H 3 C 3,10 3,18 8,18 M 32,10 H 37 C 37,10 37,18 32,18"/>
+    <path d="M 20,35 V 43 M 11,43 H 29"/>
+  </g>
+
+  <!-- Math Symbols -->
+  <path d="M 50,125 V 141 M 42,133 H 58" class="edu-accent"/>
+  <g class="edu-icon" transform="translate(165, 60)">
+    <line x1="0" y1="12" x2="16" y2="12"/>
+    <circle cx="8" cy="4" r="1.5" class="edu-dot"/>
+    <circle cx="8" cy="20" r="1.5" class="edu-dot"/>
+  </g>
+  <path d="M 75,225 L 80,225 L 85,238 L 98,212 H 110" class="edu-icon"/>
+
+  <!-- Star / Sparkles -->
+  <path d="M 130,215 L 132,222 L 139,224 L 132,226 L 130,233 L 128,226 L 121,224 L 128,222 Z" class="edu-accent"/>
+  <path d="M 30,100 L 31.5,105 L 36.5,106.5 L 31.5,108 L 30,113 L 28.5,108 L 23.5,106.5 L 28.5,105 Z" class="edu-icon"/>
+
+  <!-- Subtle Ambient Dots Grid -->
+  <circle cx="15" cy="15" r="1.5" class="edu-dot"/>
+  <circle cx="150" cy="15" r="1.5" class="edu-dot"/>
+  <circle cx="285" cy="15" r="1.5" class="edu-dot"/>
+  <circle cx="15" cy="150" r="1.5" class="edu-dot"/>
+  <circle cx="285" cy="150" r="1.5" class="edu-dot"/>
+  <circle cx="15" cy="285" r="1.5" class="edu-dot"/>
+  <circle cx="150" cy="285" r="1.5" class="edu-dot"/>
+  <circle cx="285" cy="285" r="1.5" class="edu-dot"/>
+</svg>
