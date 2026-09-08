@@ -13,7 +13,7 @@ The project demonstrates practical application of **React component-based archit
 | | |
 |---|---|
 | **Project Name** | QuizMaster |
-| **Project Type** | College / Academic Web Development Project |
+| **Project Type** | FEE-II Web Development Project |
 | **Application Type** | Single Page Application (SPA) |
 | **Frontend** | React.js |
 | **Build Tool** | Vite |
