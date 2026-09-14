@@ -21,12 +21,11 @@ The application allows users to configure quizzes by **category, difficulty, and
 * Previous, next, skip, and direct question navigation
 * Question flagging for later review
 * Real-time progress and answer tracking
-* Early submission with unanswered-question confirmation
 * Detailed results including score, accuracy, time, and grade
 * Complete answer review with explanations
 * Retry mode for incorrect or unanswered questions
 * Attempt history with statistics and personal-best tracking
-* Responsive interface for different screen sizes
+* (Responsive interface) for different screen sizes
 
 ## Technology Stack
 
@@ -37,11 +36,11 @@ The application allows users to configure quizzes by **category, difficulty, and
 | Vite               | Development and build tooling               |
 | React Router       | Client-side navigation                      |
 | Tailwind CSS / CSS | Styling and responsive layouts              |
-| Local Storage      | Persistent quiz attempt history             |
+| Local Storage      | Quiz attempt history                        |
 | ESLint             | Code quality and linting                    |
 | Git & GitHub       | Version control and collaboration           |
 
-## Project Structure
+## Structure
 
 ```text
 QuizMaster/
