@@ -27,19 +27,7 @@ The application allows users to configure quizzes by **category, difficulty, and
 * Attempt history with statistics and personal-best tracking
 * (Responsive interface) for different screen sizes
 
-## Technology Stack
-
-| Technology         | Purpose                                     |
-| ------------------ | ------------------------------------------- |
-| React.js           | User interface and application architecture |
-| JavaScript / JSX   | Application logic and UI development        |
-| Vite               | Development and build tooling               |
-| React Router       | Client-side navigation                      |
-| Tailwind CSS / CSS | Styling and responsive layouts              |
-| Local Storage      | Quiz attempt history                        |
-| ESLint             | Code quality and linting                    |
-| Git & GitHub       | Version control and collaboration           |
-
+  
 ## Structure
 
 ```text
