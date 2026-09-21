@@ -94,8 +94,8 @@ Quiz attempts are stored in the browser's **Local Storage**, including score, ac
 
 
 ## Future Scope
-* user profile & authentication
-* topic wise analytics 
+* integrate using API for ques bank
+* user profile & authentication 
 * leaderboard scores (among peers)
 <br>
 * interface improvement 
