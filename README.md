@@ -107,5 +107,7 @@ Quiz attempts are stored in the browser's **Local Storage**, including score, ac
 * The application is primarily intended as an academic frontend project.
 
 ## Future Scope
-
-Potential improvements include backend integration, user authentication, cloud-synchronized history, an admin question-management system, leaderboards, multiplayer quizzes, advanced analytics, adaptive difficulty, and improved accessibility.
+* User Profile & Authentication
+* topic wise analytics
+* Leaderboard scores among peers (different ids)
+* interface improvement 
