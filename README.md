@@ -71,6 +71,12 @@ Review / Retry / Play Again
         ↓
 Attempt History
 ```
+## Limitations
+
+* Questions are maintained within the project rather than through an admin/backend system.
+* Attempt history is stored locally.
+* No authentication or cloud synchronization is implemented.
+* The application is primarily intended as an academic frontend project.
 
 ## Question Selection
 
@@ -81,18 +87,11 @@ Questions are selected according to the configured category and difficulty. If s
 3. Same difficulty + any category
 4. Any remaining questions
 
-Questions and options are shuffled to provide variation between attempts.
 
 ## Data Storage
 
 Quiz attempts are stored in the browser's **Local Storage**, including score, accuracy, answer statistics, question count, time taken, date, and personal-best status. Since there is no backend database, this history is limited to the browser/device where the application is used.
 
-## Limitations
-
-* Questions are maintained within the project rather than through an admin/backend system.
-* Attempt history is stored locally.
-* No authentication or cloud synchronization is implemented.
-* The application is primarily intended as an academic frontend project.
 
 ## Future Scope
 * User Profile & Authentication
