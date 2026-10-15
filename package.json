@@ -10,13 +10,19 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@hookform/resolvers": "^5.9.1",
+    "@supabase/supabase-js": "^2.117.3",
     "@tailwindcss/vite": "^4.3.3",
     "axios": "^1.19.0",
     "canvas-confetti": "^1.9.4",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
+    "react-hook-form": "^7.90.0",
     "react-router-dom": "^7.18.2",
-    "tailwindcss": "^4.3.3"
+    "recharts": "^3.10.1",
+    "tailwindcss": "^4.3.3",
+    "zod": "^4.6.7",
+    "zustand": "^5.0.15"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
