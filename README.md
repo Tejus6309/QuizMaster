@@ -235,22 +235,6 @@ QuizMaster uses browser Local Storage for local records such as quiz attempts, s
 
 When configured, Supabase is used for authentication. Local browser storage used by the application should not be treated as a secure store for sensitive information. Avoid using real passwords in demo/offline mode, and do not store sensitive personal data in custom questions or local records.
 
-## ✅ Manual Test Checklist
-
-- [ ] Create an account or enter through the available demo/offline experience.
-- [ ] Select a category, difficulty, and question count.
-- [ ] Start a curated quiz and verify the countdown and answer feedback.
-- [ ] Navigate, skip, flag, and jump between questions.
-- [ ] Submit a quiz with both complete and incomplete answers.
-- [ ] Check the score, accuracy, time, grade, and answer review.
-- [ ] Retry incorrect or unanswered questions.
-- [ ] Fetch an online trivia quiz and test error/retry/fallback behavior.
-- [ ] Save questions to the Study Cart and launch a practice session.
-- [ ] Create, edit, and delete a custom question.
-- [ ] Check the dashboard, profile, and attempt history.
-- [ ] Delete an attempt and clear history.
-- [ ] Run `npm run lint` and `npm run build`.
-
 ## ⚠️ Current Scope and Limitations
 
 - The curated question bank is bundled with the frontend.
