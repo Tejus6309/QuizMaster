@@ -8,57 +8,28 @@ The application combines a modular React interface with account-aware experience
 
 ## ✨ Features
 
-### 🎯 Customizable quiz sessions
-- Choose from **Science, History, Geography, Movies & TV, Sports, Music**, or a mixed quiz.
-- Select **Any, Easy, Medium, or Hard** difficulty.
-- Choose a session length of **5, 10, 15, or 20 questions**.
-- Question selection prioritizes matching category and difficulty, then fills remaining slots from broader pools when needed.
-- Questions and answer options are shuffled between sessions.
+### ● Customizable quiz sessions
 
-### ⏱️ Timed quiz experience
-- A **20-second countdown per question**.
-- Immediate answer feedback and explanations where available.
-- Previous/next navigation, skipping, and a question palette.
-- Flag questions to revisit later.
-- Track answered, unanswered, and flagged questions.
-- Submit before reaching the final question, with confirmation when unanswered questions remain.
+### ● Timed quiz experience
 
-### 📊 Results and answer review
-- Score percentage, correct/incorrect/unanswered counts, and accuracy.
-- Time taken and average time per question.
-- Performance grade and personal-best indicators.
-- Review questions alongside your answers, the correct answers, and explanations.
-- Retry incorrect or unanswered questions as a focused practice session.
 
-### 🌐 Curated and live trivia sources
-- Use the built-in curated question bank for a fast, offline-ready experience.
-- Fetch questions from the **Open Trivia Database** using Axios.
-- Configure online trivia category, difficulty, and question count.
-- Retry a failed API request or switch back to curated questions.
+### ● Results and answer review
 
-### 📚 Study Deck & Question Studio
-- Save tricky questions to a **Study Cart** while browsing or practicing.
-- Launch a quiz using saved questions.
-- Explore the question bank with search, category and difficulty filters, sorting, and pagination.
-- Create, edit, and delete custom multiple-choice questions.
-- Add explanations to custom questions and use them in personalized practice sessions.
 
-### 👤 Accounts, dashboard, and profile
-- Sign-up and sign-in screens.
-- Supabase Auth integration when credentials are configured.
-- Demo/offline fallback when Supabase is not configured.
-- Dashboard, profile, and account-aware navigation.
-- Quiz history and personal performance statistics.
+### ● Curated and live trivia sources
 
-### 🏆 Attempt history and progress
-- View previous quiz attempts and filter history by category.
-- Track total attempts, best score, best accuracy, and average score.
-- Identify personal-best attempts.
-- Delete individual attempts or clear the history.
-- Keep quiz history, saved questions, and custom questions scoped to the active account in browser storage.
 
-### 📱 Responsive interface
-A modular, responsive UI built from reusable components, shared styling, progress indicators, modals, tabs, forms, and toast notifications.
+### ● Study Deck & Question Studio
+
+
+### ● Accounts, dashboard, and profile
+
+
+### ● Attempt history and progress
+
+
+### ● Responsive interface
+
 
 ---
 
