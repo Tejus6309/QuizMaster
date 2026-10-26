@@ -133,7 +133,7 @@ export default function App() {
           alignItems: 'center',
           justifyContent: 'center',
           minHeight: '80vh',
-          gap: '16px',
+          gap: '18px',
         }}
       >
         <div className="qm-navbar__logo-icon" style={{ width: '48px', height: '48px' }}>
