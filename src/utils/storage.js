@@ -1,3 +1,10 @@
+import {
+  getSupabaseConfig,
+  fetchQuizResultsFromSupabase,
+  syncMultipleQuizResultsToSupabase,
+  deleteQuizResultFromSupabase,
+} from '../lib/supabase.js'
+
 const BASE_STORAGE_KEY = 'quizmaster_results'
 
 /**
@@ -89,7 +96,7 @@ export function saveResult(result, targetUserId = null) {
 }
 
 /**
- * Retrieves all results exclusive to the specified or current user
+ * Retrieves all results exclusive to the specified or current user from localStorage
  */
 export function getAllResults(targetUserId = null) {
   try {
@@ -132,6 +139,200 @@ export function getAllResults(targetUserId = null) {
 }
 
 /**
+ * Merges remote results from Supabase into local storage, recalculates personal bests, and persists
+ */
+export function mergeResultsIntoStorage(remoteResults, targetUserId = null) {
+  if (!Array.isArray(remoteResults)) return getAllResults(targetUserId)
+
+  try {
+    const uid = getActiveUserIdentifier(targetUserId)
+    const storageKey = getUserStorageKey(uid)
+    const local = getAllResults(uid)
+
+    const mergedMap = new Map()
+
+    // 1. Prime map with local items
+    local.forEach((r) => {
+      const key = r.id || `${r.date}_${r.categoryName}_${r.correct}_${r.total}`
+      mergedMap.set(key, r)
+    })
+
+    // 2. Overlay remote results
+    remoteResults.forEach((remote) => {
+      const key = remote.id || `${remote.date}_${remote.categoryName}_${remote.correct}_${remote.total}`
+      const existing = mergedMap.get(key)
+      if (existing) {
+        mergedMap.set(key, { ...existing, ...remote, isSynced: true })
+      } else {
+        // Also check approximate duplicate
+        let foundKey = null
+        for (const [k, item] of mergedMap.entries()) {
+          const timeDiff = Math.abs(new Date(item.date).getTime() - new Date(remote.date).getTime())
+          if (
+            item.categoryName === remote.categoryName &&
+            item.correct === remote.correct &&
+            item.total === remote.total &&
+            item.percentage === remote.percentage &&
+            (isNaN(timeDiff) || timeDiff < 5000)
+          ) {
+            foundKey = k
+            break
+          }
+        }
+
+        if (foundKey) {
+          const prev = mergedMap.get(foundKey)
+          mergedMap.set(foundKey, { ...prev, ...remote, id: remote.id || prev.id, isSynced: true })
+        } else {
+          mergedMap.set(key, { ...remote, userId: uid, isSynced: true })
+        }
+      }
+    })
+
+    const combined = Array.from(mergedMap.values())
+
+    // Sort chronologically ascending to recalculate personal bests accurately
+    combined.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+
+    const bestTracker = {}
+    combined.forEach((item) => {
+      const cat = item.categoryName || 'Mixed'
+      const prevBest = bestTracker[cat]
+      const isPb =
+        !prevBest ||
+        item.percentage > prevBest.percentage ||
+        (item.percentage === prevBest.percentage && item.time < prevBest.time)
+
+      item.isPersonalBest = isPb
+      if (isPb) {
+        bestTracker[cat] = { percentage: item.percentage, time: item.time }
+      }
+    })
+
+    // Sort descending by date (newest first)
+    combined.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+
+    const finalResults = combined.slice(0, 100)
+    localStorage.setItem(storageKey, JSON.stringify(finalResults))
+
+    window.dispatchEvent(
+      new CustomEvent('quizmaster-results-updated', {
+        detail: { userId: uid, source: 'supabase-cloud-sync' },
+      })
+    )
+
+    return finalResults
+  } catch (err) {
+    console.error('Failed to merge remote results into storage:', err)
+    return getAllResults(targetUserId)
+  }
+}
+
+/**
+ * Two-way cloud sync with Supabase:
+ * 1. Fetches latest results from Supabase
+ * 2. Uploads any unsynced local results
+ * 3. Merges remote records into localStorage and dispatches update
+ */
+export async function syncResultsWithCloud(user) {
+  if (!user) {
+    return {
+      success: false,
+      reason: 'No authenticated user',
+      results: getAllResults('guest'),
+    }
+  }
+
+  const config = getSupabaseConfig()
+  if (!config.isConfigured) {
+    return {
+      success: false,
+      reason: 'Supabase is not configured',
+      results: getAllResults(user.id),
+    }
+  }
+
+  try {
+    // 1. Fetch remote records from Supabase
+    const { data: remoteResults, error, tableMissing } = await fetchQuizResultsFromSupabase(user)
+
+    if (tableMissing) {
+      return {
+        success: false,
+        tableMissing: true,
+        error: 'Table "quiz_results" does not exist in Supabase schema yet.',
+        results: getAllResults(user.id),
+      }
+    }
+
+    if (error) {
+      return {
+        success: false,
+        error,
+        results: getAllResults(user.id),
+      }
+    }
+
+    // 2. Identify and push any local records missing from Supabase
+    const local = getAllResults(user.id)
+    const remoteIdSet = new Set((remoteResults || []).map((r) => String(r.id)))
+
+    const pendingUploads = local.filter((l) => {
+      if (!l.id) return false
+      return !remoteIdSet.has(String(l.id))
+    })
+
+    let uploadedCount = 0
+    if (pendingUploads.length > 0) {
+      const uploadRes = await syncMultipleQuizResultsToSupabase(pendingUploads, user)
+      if (uploadRes.synced) {
+        uploadedCount = uploadRes.count || pendingUploads.length
+      }
+    }
+
+    // 3. Merge remote results into local storage
+    const merged = mergeResultsIntoStorage(remoteResults || [], user.id)
+
+    // 4. Record sync time
+    const nowIso = new Date().toISOString()
+    try {
+      localStorage.setItem(`qm_last_synced_${user.id}`, nowIso)
+    } catch (_e) {
+      // Ignore localStorage write error if quota exceeded
+    }
+
+    return {
+      success: true,
+      results: merged,
+      count: merged.length,
+      remoteCount: (remoteResults || []).length,
+      uploadedCount,
+      lastSynced: new Date(nowIso),
+    }
+  } catch (err) {
+    console.warn('syncResultsWithCloud error:', err)
+    return {
+      success: false,
+      error: err.message,
+      results: getAllResults(user.id),
+    }
+  }
+}
+
+/**
+ * Returns the timestamp of the last successful Supabase cloud sync
+ */
+export function getLastSyncedTime(userId = null) {
+  try {
+    const uid = getActiveUserIdentifier(userId)
+    const raw = localStorage.getItem(`qm_last_synced_${uid}`)
+    return raw ? new Date(raw) : null
+  } catch {
+    return null
+  }
+}
+
+/**
  * Returns personal best score exclusive to this user account
  */
 export function getBestScore(categoryName = null, targetUserId = null) {
@@ -154,7 +355,7 @@ export function getBestScore(categoryName = null, targetUserId = null) {
 }
 
 /**
- * Deletes an attempt exclusive to this user account
+ * Deletes an attempt exclusive to this user account and syncs deletion to Supabase
  */
 export function deleteResult(id, targetUserId = null) {
   try {
@@ -168,6 +369,9 @@ export function deleteResult(id, targetUserId = null) {
     window.dispatchEvent(
       new CustomEvent('quizmaster-results-updated', { detail: { userId: uid } })
     )
+
+    // Delete from Supabase in background
+    deleteQuizResultFromSupabase(id, { id: uid })
 
     return updated
   } catch (e) {

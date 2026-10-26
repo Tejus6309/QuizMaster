@@ -1,11 +1,19 @@
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useMemo, useEffect, useCallback } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext.jsx'
 import { useQuizStore } from '../store/useQuizStore.js'
-import { getAllResults, getBestScore } from '../utils/storage.js'
+import { useToast } from '../context/ToastContext.jsx'
+import {
+  getAllResults,
+  getBestScore,
+  syncResultsWithCloud,
+  getLastSyncedTime,
+} from '../utils/storage.js'
+import { subscribeToQuizResults } from '../lib/supabase.js'
 import { formatTime } from '../utils/helpers.js'
 import { categories } from '../data/questionBank.js'
 import Breadcrumbs from '../components/common/Breadcrumbs.jsx'
+import SupabaseModal from '../components/SupabaseModal.jsx'
 import {
   Trophy,
   Target,
@@ -14,6 +22,8 @@ import {
   Sparkles,
   ArrowRight,
   Brain,
+  RefreshCw,
+  CloudCheck,
 } from '../components/icons/Icons.jsx'
 
 // Shopping Bag / Cart icon
@@ -49,21 +59,146 @@ function GlobeIcon({ className = '' }) {
 
 /**
  * Mini Project: Interactive Analytics & Learning Dashboard
- * Practical topics: State architecture in React apps, Global vs local state, Dashboard mini project
+ * Synchronized across devices with Supabase Cloud
  */
 export default function DashboardScreen({ onStartCustomQuiz }) {
   const { user } = useAuth()
+  const { showToast } = useToast()
   const navigate = useNavigate()
   const { studyCart, customQuestions } = useQuizStore()
   const [resultsVersion, setResultsVersion] = useState(0)
 
+  // Cloud Sync State
+  const [isSyncing, setIsSyncing] = useState(false)
+  const [showSqlModal, setShowSqlModal] = useState(false)
+  const [, setSyncState] = useState(() => ({
+    synced: false,
+    lastSynced: getLastSyncedTime(user?.id),
+    error: null,
+    tableMissing: false,
+  }))
+
+  // Listen for local storage updates
   useEffect(() => {
     const handleUpdate = () => setResultsVersion((v) => v + 1)
     window.addEventListener('quizmaster-results-updated', handleUpdate)
     return () => window.removeEventListener('quizmaster-results-updated', handleUpdate)
   }, [])
 
+  // Two-way cloud sync trigger function
+  const triggerCloudSync = useCallback(
+    async (isSilent = false) => {
+      if (!user) return
+      if (!isSilent) setIsSyncing(true)
+
+      try {
+        const res = await syncResultsWithCloud(user)
+
+        if (res.success) {
+          setSyncState({
+            synced: true,
+            lastSynced: res.lastSynced || new Date(),
+            error: null,
+            tableMissing: false,
+          })
+          if (!isSilent) {
+            showToast(
+              res.remoteCount > 0
+                ? `Fetched ${res.remoteCount} result(s) from Supabase Cloud! Synced across devices.`
+                : 'Dashboard is up to date with Supabase Cloud!',
+              'success'
+            )
+          }
+        } else if (res.tableMissing) {
+          setSyncState((prev) => ({
+            ...prev,
+            synced: false,
+            tableMissing: true,
+            error: 'Table "quiz_results" does not exist in Supabase yet.',
+          }))
+          if (!isSilent) {
+            showToast(
+              'Supabase connected! Run the SQL script to create the quiz_results table.',
+              'info'
+            )
+          }
+        } else if (res.error) {
+          setSyncState((prev) => ({
+            ...prev,
+            synced: false,
+            error: res.error,
+          }))
+          if (!isSilent) {
+            showToast(`Sync issue: ${res.error}`, 'warning')
+          }
+        }
+      } catch (err) {
+        console.warn('Dashboard triggerCloudSync error:', err)
+      } finally {
+        if (!isSilent) setIsSyncing(false)
+      }
+    },
+    [user, showToast]
+  )
+
+  // 1. Initial Cloud Sync on Mount or User Change
+  useEffect(() => {
+    if (!user) return
+    let isCurrent = true
+    syncResultsWithCloud(user).then((res) => {
+      if (!isCurrent) return
+      if (res.success) {
+        setSyncState({
+          synced: true,
+          lastSynced: res.lastSynced || new Date(),
+          error: null,
+          tableMissing: false,
+        })
+      } else if (res.tableMissing) {
+        setSyncState((prev) => ({
+          ...prev,
+          synced: false,
+          tableMissing: true,
+          error: 'Table "quiz_results" does not exist in Supabase yet.',
+        }))
+      }
+    })
+    return () => {
+      isCurrent = false
+    }
+  }, [user])
+
+  // 2. Cross-Device Realtime Updates: Subscribe to Postgres changes on `quiz_results`
+  useEffect(() => {
+    if (!user) return
+    const unsubscribe = subscribeToQuizResults(user, () => {
+      // Remote device took a quiz: re-sync dashboard automatically
+      triggerCloudSync(true)
+    })
+    return () => unsubscribe()
+  }, [user, triggerCloudSync])
+
+  // 3. Tab Refocus Auto-Sync: When user switches back from another device or tab
+  useEffect(() => {
+    const handleFocus = () => {
+      if (user) triggerCloudSync(true)
+    }
+    window.addEventListener('focus', handleFocus)
+    return () => window.removeEventListener('focus', handleFocus)
+  }, [user, triggerCloudSync])
+
+  // 4. Supabase custom credentials updated
+  useEffect(() => {
+    const handleConfigChange = () => {
+      if (user) triggerCloudSync(false)
+    }
+    window.addEventListener('quizmaster-supabase-config-changed', handleConfigChange)
+    return () => window.removeEventListener('quizmaster-supabase-config-changed', handleConfigChange)
+  }, [user, triggerCloudSync])
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const results = useMemo(() => getAllResults(user?.id), [user, resultsVersion])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const overallBest = useMemo(() => getBestScore(null, user?.id), [user, resultsVersion])
 
   // Aggregate Metrics
@@ -138,6 +273,7 @@ export default function DashboardScreen({ onStartCustomQuiz }) {
     }
   }
 
+
   return (
     <div className="qm-dashboard">
       <Breadcrumbs items={[{ label: 'Dashboard & Analytics' }]} />
@@ -149,13 +285,27 @@ export default function DashboardScreen({ onStartCustomQuiz }) {
             <span className="pill-dot"></span>
             <span>{rankTier.badge} {rankTier.title} Level</span>
           </div>
+
           <h1 className="qm-dashboard__title">Scholar Performance Dashboard</h1>
           <p className="qm-dashboard__subtitle">
-            Comprehensive real-time analytics, learning metrics, and targeted practice hub.
+            Comprehensive real-time analytics, cloud-synced metrics, and targeted practice hub.
           </p>
         </div>
 
         <div className="qm-dashboard__header-actions">
+          {user && (
+            <button
+              type="button"
+              className="btn btn--secondary qm-btn-flex"
+              onClick={() => triggerCloudSync(false)}
+              disabled={isSyncing}
+              title="Fetch and sync results with Supabase Cloud across all devices"
+            >
+              <RefreshCw className={isSyncing ? 'spin' : ''} />
+              <span>{isSyncing ? 'Syncing...' : 'Sync Cloud'}</span>
+            </button>
+          )}
+
           <Link to="/" className="btn btn--primary qm-btn-flex">
             <Brain />
             <span>Launch Quiz</span>
@@ -224,7 +374,7 @@ export default function DashboardScreen({ onStartCustomQuiz }) {
             <div>
               <h2 className="qm-dashboard-card__title">Category Mastery Breakdown</h2>
               <p className="qm-dashboard-card__subtitle">
-                Accuracy score trends based on your past quiz sessions
+                Accuracy score trends based on your cloud-synced quiz sessions
               </p>
             </div>
             <Link to="/history" className="qm-dashboard-card__link">
@@ -309,6 +459,7 @@ export default function DashboardScreen({ onStartCustomQuiz }) {
                 <ArrowRight className="qm-feature-item__arrow" />
               </Link>
 
+
               <Link to="/" className="qm-feature-item">
                 <div className="qm-feature-item__icon qm-feature-item__icon--indigo">
                   <GlobeIcon />
@@ -345,7 +496,7 @@ export default function DashboardScreen({ onStartCustomQuiz }) {
           <div>
             <h2 className="qm-dashboard-card__title">Recent Quiz Attempts</h2>
             <p className="qm-dashboard-card__subtitle">
-              Your latest recorded performance sessions
+              Your latest recorded performance sessions synced across devices
             </p>
           </div>
           <Link to="/history" className="qm-dashboard-card__link">
@@ -355,10 +506,23 @@ export default function DashboardScreen({ onStartCustomQuiz }) {
 
         {results.length === 0 ? (
           <div className="qm-dashboard__empty">
-            <p>No attempts recorded yet. Start your first challenge to see analytics!</p>
-            <Link to="/" className="btn btn--primary" style={{ marginTop: '12px' }}>
-              Start Challenge
-            </Link>
+            <p>No attempts recorded yet. Start your first challenge or sync with Supabase!</p>
+            <div style={{ display: 'flex', gap: '10px', marginTop: '14px', flexWrap: 'wrap' }}>
+              <Link to="/" className="btn btn--primary">
+                Start Challenge
+              </Link>
+              {user && (
+                <button
+                  type="button"
+                  className="btn btn--secondary qm-btn-flex"
+                  onClick={() => triggerCloudSync(false)}
+                  disabled={isSyncing}
+                >
+                  <RefreshCw className={isSyncing ? 'spin' : ''} />
+                  <span>Fetch Cloud History</span>
+                </button>
+              )}
+            </div>
           </div>
         ) : (
           <div className="qm-recent-grid">
@@ -366,7 +530,15 @@ export default function DashboardScreen({ onStartCustomQuiz }) {
               <div key={r.id || i} className="qm-recent-item">
                 <div className="qm-recent-item__top">
                   <span className="qm-recent-item__cat">{r.categoryName}</span>
-                  <span className="qm-recent-item__score-badge">{r.percentage}%</span>
+                  <div className="qm-recent-item__top-right">
+                    {r.isSynced && (
+                      <span className="qm-cloud-tag" title="Synced across devices via Supabase Cloud">
+                        <CloudCheck className="qm-cloud-tag__icon" />
+                        <span>Cloud</span>
+                      </span>
+                    )}
+                    <span className="qm-recent-item__score-badge">{r.percentage}%</span>
+                  </div>
                 </div>
                 <div className="qm-recent-item__meta">
                   <span>{r.correct}/{r.total} Correct</span>
@@ -386,6 +558,15 @@ export default function DashboardScreen({ onStartCustomQuiz }) {
           </div>
         )}
       </section>
+
+      {/* Supabase Configuration & SQL Schema Modal */}
+      <SupabaseModal
+        isOpen={showSqlModal}
+        onClose={() => {
+          setShowSqlModal(false)
+          triggerCloudSync(true)
+        }}
+      />
     </div>
   )
 }

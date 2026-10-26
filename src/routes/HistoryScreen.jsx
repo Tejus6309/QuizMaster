@@ -1,7 +1,7 @@
-import { useState, useMemo, useEffect } from 'react'
-import { getAllResults, deleteResult, clearResults, getBestScore } from '../utils/storage.js'
+import { useState, useMemo, useEffect, useCallback } from 'react'
+import { getAllResults, deleteResult, clearResults, getBestScore, syncResultsWithCloud } from '../utils/storage.js'
 import { formatTime } from '../utils/helpers.js'
-import { Trophy, Target, Flame, Trash2, ArrowLeft, Filter, ArrowUpDown, Star } from '../components/icons/Icons.jsx'
+import { Trophy, Target, Flame, Trash2, ArrowLeft, Filter, ArrowUpDown, Star, RefreshCw } from '../components/icons/Icons.jsx'
 import { categories } from '../data/questionBank.js'
 import { useAuth } from '../context/AuthContext.jsx'
 import { useToast } from '../context/ToastContext.jsx'
@@ -23,6 +23,7 @@ export default function HistoryScreen({ onHome }) {
   const { user } = useAuth()
   const { showToast } = useToast()
   const [results, setResults] = useState(() => getAllResults(user?.id))
+  const [isSyncing, setIsSyncing] = useState(false)
 
   // Search, Filter, and Sort State
   const [searchQuery, setSearchQuery] = useState('')
@@ -36,6 +37,32 @@ export default function HistoryScreen({ onHome }) {
   // Modal State
   const [clearConfirmOpen, setClearConfirmOpen] = useState(false)
   const [deleteTargetId, setDeleteTargetId] = useState(null)
+
+  const handleSync = useCallback(async (isSilent = false) => {
+    if (!user) return
+    if (!isSilent) setIsSyncing(true)
+    try {
+      const res = await syncResultsWithCloud(user)
+      if (res.success && !isSilent) {
+        showToast(
+          res.remoteCount > 0
+            ? `Synced ${res.remoteCount} record(s) from Supabase Cloud!`
+            : 'History is in sync with Supabase Cloud!',
+          'success'
+        )
+      }
+    } catch (err) {
+      console.warn('History sync error:', err)
+    } finally {
+      if (!isSilent) setIsSyncing(false)
+    }
+  }, [user, showToast])
+
+  useEffect(() => {
+    if (user) {
+      syncResultsWithCloud(user).catch(() => {})
+    }
+  }, [user])
 
   useEffect(() => {
     const handleUpdate = () => setResults(getAllResults(user?.id))
@@ -135,6 +162,19 @@ export default function HistoryScreen({ onHome }) {
             )}
           </span>
         </div>
+        {user && (
+          <button
+            type="button"
+            className="btn btn--secondary btn--sm qm-btn-flex"
+            style={{ marginLeft: 'auto' }}
+            onClick={() => handleSync(false)}
+            disabled={isSyncing}
+            title="Fetch and sync results with Supabase across all devices"
+          >
+            <RefreshCw className={isSyncing ? 'spin' : ''} style={{ width: '13px', height: '13px' }} />
+            <span>{isSyncing ? 'Syncing...' : 'Sync Cloud'}</span>
+          </button>
+        )}
       </div>
 
       {overallBest && (

@@ -67,30 +67,39 @@ export default function SupabaseModal({ isOpen, onClose }) {
     }
   }
 
-  const sqlSchema = `-- Run this in your Supabase SQL Editor to store quiz results:
+  const sqlSchema = `-- Run this in your Supabase SQL Editor to enable cross-device syncing:
 create table if not exists public.quiz_results (
   id text primary key,
-  user_id uuid references auth.users(id) on delete cascade,
+  user_id text not null,
   user_email text,
   category text,
   difficulty text,
-  score integer,
-  total_questions integer,
-  percentage integer,
-  accuracy integer,
-  total_time integer,
+  score integer default 0,
+  total_questions integer default 0,
+  percentage integer default 0,
+  accuracy integer default 0,
+  total_time integer default 0,
   created_at timestamp with time zone default now()
 );
 
 -- Enable Row Level Security (RLS)
 alter table public.quiz_results enable row level security;
 
--- Allow users to view and insert their own results
+-- Allow users to view, insert, and update their own results
 create policy "Users can view own results" on public.quiz_results
-  for select using (auth.uid() = user_id);
+  for select using (auth.uid()::text = user_id or user_id = 'guest');
 
 create policy "Users can insert own results" on public.quiz_results
-  for insert with check (auth.uid() = user_id);`
+  for insert with check (auth.uid()::text = user_id or user_id = 'guest');
+
+create policy "Users can update own results" on public.quiz_results
+  for update using (auth.uid()::text = user_id or user_id = 'guest');
+
+create policy "Users can delete own results" on public.quiz_results
+  for delete using (auth.uid()::text = user_id or user_id = 'guest');
+
+-- Enable Realtime Sync across all connected devices
+alter publication supabase_realtime add table public.quiz_results;`
 
   const copySql = () => {
     navigator.clipboard.writeText(sqlSchema)

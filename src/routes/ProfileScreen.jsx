@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext.jsx'
-import { getAllResults, getBestScore } from '../utils/storage.js'
+import { getAllResults } from '../utils/storage.js'
 import { formatTime } from '../utils/helpers.js'
 import {
   User,
@@ -13,13 +13,11 @@ import {
   Sparkles,
   LogOut,
   ArrowLeft,
-  SupabaseIcon,
   CheckCircle2,
-  Settings,
 } from '../components/icons/Icons.jsx'
 
 export default function ProfileScreen() {
-  const { user, isDemo, isConfigured, signOut, updateProfile } = useAuth()
+  const { user, signOut, updateProfile } = useAuth()
   const navigate = useNavigate()
   const [editingName, setEditingName] = useState(false)
   const [nameInput, setNameInput] = useState(
@@ -34,8 +32,8 @@ export default function ProfileScreen() {
     return () => window.removeEventListener('quizmaster-results-updated', handleUpdate)
   }, [])
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const results = useMemo(() => getAllResults(user?.id), [user, resultsVersion])
-  const bestScore = useMemo(() => getBestScore(null, user?.id), [user, resultsVersion])
 
   const stats = useMemo(() => {
     if (results.length === 0) {
