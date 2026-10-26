@@ -11,9 +11,7 @@ import {
   Sparkles,
   Trophy,
   Target,
-  SupabaseIcon,
 } from './icons/Icons.jsx'
-import SupabaseModal from './SupabaseModal.jsx'
 
 function ShoppingBagIcon({ className = '' }) {
   return (
@@ -40,7 +38,6 @@ export default function Navbar() {
   const { user, signOut } = useAuth()
   const { studyCart } = useQuizStore()
   const [dropdownOpen, setDropdownOpen] = useState(false)
-  const [supabaseModalOpen, setSupabaseModalOpen] = useState(false)
   const dropdownRef = useRef(null)
   const location = useLocation()
   const navigate = useNavigate()
@@ -197,18 +194,6 @@ export default function Navbar() {
                     <span>Attempt History</span>
                   </Link>
 
-                  <button
-                    type="button"
-                    className="qm-dropdown-menu__item"
-                    onClick={() => {
-                      setDropdownOpen(false)
-                      setSupabaseModalOpen(true)
-                    }}
-                  >
-                    <SupabaseIcon className="menu-item-icon" />
-                    <span>Supabase Cloud Sync</span>
-                  </button>
-
                   <div className="qm-dropdown-menu__divider" />
 
                   <button
@@ -235,10 +220,6 @@ export default function Navbar() {
           )}
         </div>
       </div>
-      <SupabaseModal
-        isOpen={supabaseModalOpen}
-        onClose={() => setSupabaseModalOpen(false)}
-      />
     </nav>
   )
 }
