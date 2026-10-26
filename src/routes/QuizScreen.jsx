@@ -46,8 +46,9 @@ export default function QuizScreen({ config, onFinish }) {
       answers: finalAnswers,
       markedForReview,
       totalTime,
+      config,
     })
-  }, [questions, answers, markedForReview, totalTime, onFinish])
+  }, [questions, answers, markedForReview, totalTime, config, onFinish])
 
   const goToNext = useCallback(() => {
     setTimeoutNotice(false)
@@ -181,7 +182,11 @@ export default function QuizScreen({ config, onFinish }) {
         <div className="quiz-screen__header-meta">
           <div className="quiz-screen__category-badge">
             <span className="badge-dot" />
-            <span className="badge-cat-name">{question.category || config.category || 'Quiz'}</span>
+            <span className="badge-cat-name">
+              {config?.category === 'all'
+                ? 'Mixed'
+                : question.category || config?.category || 'Quiz'}
+            </span>
             <span className="badge-sep">•</span>
             <span className="badge-diff">{question.difficulty || config.difficulty || 'Medium'}</span>
           </div>

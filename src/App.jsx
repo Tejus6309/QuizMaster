@@ -54,9 +54,9 @@ class ErrorBoundary extends Component {
 }
 
 const defaultConfig = {
-  category: null,
-  difficulty: null,
-  count: null,
+  category: 'all',
+  difficulty: 'all',
+  count: 10,
   customQuestions: null,
 }
 
@@ -191,6 +191,7 @@ export default function App() {
               user ? (
                 <ResultScreen
                   result={result}
+                  config={config}
                   onRestart={handleRestart}
                   onHome={handleHome}
                   onRetryWrong={handleRetryWrong}

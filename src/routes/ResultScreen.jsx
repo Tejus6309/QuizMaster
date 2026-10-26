@@ -21,7 +21,7 @@ function ShoppingBagIcon({ className = '' }) {
   )
 }
 
-export default function ResultScreen({ result, onRestart, onHome, onRetryWrong, onViewHistory }) {
+export default function ResultScreen({ result, config, onRestart, onHome, onRetryWrong, onViewHistory }) {
   const { user } = useAuth()
   const { addToCart } = useQuizStore()
   const { showToast } = useToast()
@@ -57,10 +57,33 @@ export default function ResultScreen({ result, onRestart, onHome, onRetryWrong, 
   }, [result])
 
   const categoryName = useMemo(() => {
-    if (!result || !result.questions) return ''
+    if (!result || !result.questions || result.questions.length === 0) return 'Mixed'
+
+    const confCat = result.config?.category || config?.category
+    if (confCat === 'all' || confCat === 'mixed' || confCat === 'Mixed') {
+      return 'Mixed'
+    }
+
+    // If questions span across multiple different categories, it is a mixed attempt
+    const distinctCats = new Set(result.questions.map((q) => q.category).filter(Boolean))
+    if (distinctCats.size > 1) {
+      return 'Mixed'
+    }
+
+    // If explicit config category is set to a specific category
+    if (confCat && confCat !== 'all') {
+      const matched = categories.find(
+        (c) => c.id === confCat || c.name.toLowerCase() === confCat.toLowerCase()
+      )
+      if (matched) return matched.name
+      if (confCat === 'online-api') return 'Live Trivia API'
+      return confCat
+    }
+
+    // Fallback to single category from question 0
     const cat = categories.find((c) => c.id === result.questions[0]?.category)
     return cat ? cat.name : result.questions[0]?.category || 'Mixed'
-  }, [result])
+  }, [result, config])
 
   const wrongQuestions = useMemo(() => {
     if (!result || !result.questions || !result.answers) return []
@@ -80,6 +103,11 @@ export default function ResultScreen({ result, onRestart, onHome, onRetryWrong, 
           userId: user?.id || 'guest',
           userEmail: user?.email || 'guest',
           categoryName,
+          difficulty:
+            result.config?.difficulty ||
+            config?.difficulty ||
+            result.questions[0]?.difficulty ||
+            'Medium',
           percentage,
           accuracy,
           correct: correctCount,

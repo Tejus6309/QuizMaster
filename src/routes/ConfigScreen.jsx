@@ -72,21 +72,30 @@ export default function ConfigScreen({ config, setConfig, onStart, onViewHistory
   const recentResults = results.slice(0, 3)
   const bestScore = useMemo(() => getBestScore(null, user?.id), [user, resultsVersion])
 
+  useEffect(() => {
+    if (!config.category || !config.difficulty || !config.count) {
+      setConfig((prev) => ({
+        ...prev,
+        category: prev.category || 'all',
+        difficulty: prev.difficulty || 'all',
+        count: prev.count || 10,
+      }))
+    }
+  }, [config.category, config.difficulty, config.count, setConfig])
+
   const handleStartCurated = () => {
-    if (!config.category) {
-      setError('Please select a category')
-      return
-    }
-    if (!config.difficulty) {
-      setError('Please select a difficulty')
-      return
-    }
-    if (!config.count) {
-      setError('Please select number of questions')
-      return
-    }
+    const selectedCategory = config.category || 'all'
+    const selectedDifficulty = config.difficulty || 'all'
+    const selectedCount = config.count || 10
+
     setError('')
-    setConfig((prev) => ({ ...prev, customQuestions: null }))
+    setConfig((prev) => ({
+      ...prev,
+      category: selectedCategory,
+      difficulty: selectedDifficulty,
+      count: selectedCount,
+      customQuestions: null,
+    }))
     onStart()
   }
 
@@ -180,6 +189,14 @@ export default function ConfigScreen({ config, setConfig, onStart, onViewHistory
           onClick={() => {
             setMode('curated')
             setApiError(null)
+            if (!config.category || !config.difficulty || !config.count) {
+              setConfig((prev) => ({
+                ...prev,
+                category: prev.category || 'all',
+                difficulty: prev.difficulty || 'all',
+                count: prev.count || 10,
+              }))
+            }
           }}
         >
           <BookOpenIcon className="qm-source-icon" />

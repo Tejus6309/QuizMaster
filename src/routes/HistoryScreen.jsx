@@ -85,6 +85,18 @@ export default function HistoryScreen({ onHome }) {
     return { totalAttempts, bestScore, bestAccuracy, averageScore }
   }, [results])
 
+  const categoryFilterOptions = useMemo(() => {
+    const list = ['Mixed', ...categories.map((c) => c.name)]
+    const seen = new Set(list)
+    results.forEach((r) => {
+      if (r.categoryName && !seen.has(r.categoryName)) {
+        seen.add(r.categoryName)
+        list.push(r.categoryName)
+      }
+    })
+    return list
+  }, [results])
+
   // Search, Filter, and Sort logic
   const filteredAndSortedResults = useMemo(() => {
     return results
@@ -251,9 +263,9 @@ export default function HistoryScreen({ onHome }) {
               className="history-screen__select"
             >
               <option value="all">All Categories</option>
-              {categories.map((cat) => (
-                <option key={cat.id} value={cat.name}>
-                  {cat.name}
+              {categoryFilterOptions.map((catName) => (
+                <option key={catName} value={catName}>
+                  {catName}
                 </option>
               ))}
             </select>

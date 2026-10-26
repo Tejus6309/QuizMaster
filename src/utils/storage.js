@@ -129,7 +129,11 @@ export function getAllResults(targetUserId = null) {
         )
       })
       if (!isDup) {
-        cleaned.push(r)
+        cleaned.push({
+          ...r,
+          categoryName:
+            r.categoryName === 'all' || r.categoryName === 'mixed' ? 'Mixed' : r.categoryName,
+        })
       }
     }
     return cleaned
@@ -340,8 +344,8 @@ export function getBestScore(categoryName = null, targetUserId = null) {
   if (results.length === 0) return null
 
   const filtered =
-    categoryName && categoryName !== 'Mixed'
-      ? results.filter((r) => r.categoryName === categoryName)
+    categoryName && categoryName !== 'all'
+      ? results.filter((r) => r.categoryName?.toLowerCase() === categoryName.toLowerCase())
       : results
 
   if (filtered.length === 0) return null
