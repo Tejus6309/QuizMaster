@@ -1,12 +1,8 @@
-# QuizMaster 🧠
+# QuizMaster
 
-> **A personalized quiz and study platform built with React, Vite, and Supabase.**
+QuizMaster is a React-based study platform that lets users take quizzes, review mistakes, create custom questions, and track their learning progress.
 
-QuizMaster turns quick quizzes into a complete learning workflow. Configure timed challenges, choose between a curated question bank and live trivia, review answers, retry weak areas, save questions to a study cart, create custom questions, and track your progress across attempts.
-
-The application combines a modular React interface with account-aware experiences, persistent browser storage, and optional Supabase authentication.
-
-## ✨ Features
+## FEATURES:
 
 ### ● Customizable quiz sessions
 
@@ -33,7 +29,7 @@ The application combines a modular React interface with account-aware experience
 
 ---
 
-## 🧰 Tech Stack
+## TECH STACK UUSED:
 
 | Technology | Purpose |
 |---|---|
@@ -66,69 +62,8 @@ The application combines a modular React interface with account-aware experience
 
 Unknown routes display a not-found screen.
 
-## 🚀 Getting Started
 
-### Prerequisites
-- [Node.js](https://nodejs.org/) (use a current version compatible with the installed Vite release)
-- npm
-
-### 1. Clone the repository
-
-```bash
-git clone https://github.com/Tejus6309/QuizMaster.git
-cd QuizMaster
-```
-
-### 2. Install dependencies
-
-```bash
-npm install
-```
-
-### 3. Configure environment variables (optional)
-
-QuizMaster can use its demo/offline fallback without Supabase credentials. To enable Supabase authentication:
-
-1. Create a project at [Supabase](https://supabase.com/).
-2. In the project dashboard, open **Project Settings → API**.
-3. Copy the project URL and anon/public key.
-4. Create a local `.env` file from the example:
-
-```bash
-cp .env.example .env
-```
-
-On Windows Command Prompt, you can instead run:
-
-```bat
-copy .env.example .env
-```
-
-Set the values in `.env`:
-
-```env
-VITE_SUPABASE_URL=https://your-project-id.supabase.co
-VITE_SUPABASE_ANON_KEY=your-anon-public-key
-```
-
-Use your own project values. Do not commit real secrets or private credentials. Vite exposes `VITE_*` variables to client-side code, so only use a Supabase anon/public key here—never a service-role key.
-
-### 4. Start the development server
-
-```bash
-npm run dev
-```
-
-Open the local URL printed by Vite in your browser.
-
-### 5. Build for production
-
-```bash
-npm run build
-npm run preview
-```
-
-## 📜 Available Scripts
+## 📜 Scripts Commands
 
 | Command | Description |
 |---|---|
@@ -221,16 +156,6 @@ When configured, Supabase is used for authentication. Local browser storage used
 - **Ranteg Singh Virk** — Team Member
 - **Anmol** — Team Member
 
-## 🎓 Learning Outcomes
-
-QuizMaster demonstrates practical work with React component composition, hooks, client-side routing, shared state, form validation, REST API integration, browser persistence, account-aware UI flows, and modular frontend architecture.
-
-## 📄 License
-
-This repository was developed for educational and academic purposes. No separate open-source license is specified here; check the repository for licensing updates before redistributing the project.
 
 ---
 
-<p align="center">
-  Built with 🧠 and React
-</p>
