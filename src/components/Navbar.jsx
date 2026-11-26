@@ -72,7 +72,7 @@ export default function Navbar() {
   const userInitials = getInitials(user?.user_metadata?.full_name, user?.email)
 
   return (
-    <nav className="qm-navbar">
+    <nav className="qm-navbar" aria-label="Main navigation">
       <div className="qm-navbar__container">
         {/* Logo / Brand */}
         <Link to="/" className="qm-navbar__brand">
@@ -85,13 +85,13 @@ export default function Navbar() {
         </Link>
 
         {/* Navigation Links */}
-        <div className="qm-navbar__links">
+        <div className="qm-navbar__links" hidden={!user}>
           <Link
             to="/"
             className={`qm-navbar__link ${user && location.pathname === '/' ? 'qm-navbar__link--active' : ''}`}
             aria-current={user && location.pathname === '/' ? 'page' : undefined}
           >
-            Challenge Setup
+            Quiz Setup
           </Link>
 
           <Link
