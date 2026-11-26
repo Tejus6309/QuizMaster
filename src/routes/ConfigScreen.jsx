@@ -162,9 +162,9 @@ export default function ConfigScreen({ config, setConfig, onStart, onViewHistory
                 : 'Interactive Knowledge Challenge'}
             </span>
           </div>
-          <h1 className="config-header__title">QuizMaster</h1>
+          <h1 className="config-header__title">Set up your quiz</h1>
           <p className="config-header__subtitle">
-            Customize your challenge parameters and test your knowledge
+            Choose a topic, difficulty, and question count.
           </p>
         </div>
         <button
@@ -186,6 +186,7 @@ export default function ConfigScreen({ config, setConfig, onStart, onViewHistory
         <button
           type="button"
           className={`qm-source-btn ${mode === 'curated' ? 'qm-source-btn--active' : ''}`}
+          aria-pressed={mode === 'curated'}
           onClick={() => {
             setMode('curated')
             setApiError(null)
@@ -202,13 +203,14 @@ export default function ConfigScreen({ config, setConfig, onStart, onViewHistory
           <BookOpenIcon className="qm-source-icon" />
           <div className="qm-source-info">
             <span className="qm-source-title">Curated Question Bank</span>
-            <span className="qm-source-desc">High-speed, offline-ready questions with curated explanations</span>
+            <span className="qm-source-desc">Practice offline with explanations.</span>
           </div>
         </button>
 
         <button
           type="button"
           className={`qm-source-btn ${mode === 'rest_api' ? 'qm-source-btn--active' : ''}`}
+          aria-pressed={mode === 'rest_api'}
           onClick={() => {
             setMode('rest_api')
             setError('')
@@ -216,8 +218,8 @@ export default function ConfigScreen({ config, setConfig, onStart, onViewHistory
         >
           <GlobeIcon className="qm-source-icon" />
           <div className="qm-source-info">
-            <span className="qm-source-title">Live Trivia REST API (Axios)</span>
-            <span className="qm-source-desc">Fetch live questions dynamically from Open Trivia Database</span>
+            <span className="qm-source-title">Live Trivia</span>
+            <span className="qm-source-desc">Get fresh questions from Open Trivia Database.</span>
           </div>
         </button>
       </div>
@@ -229,13 +231,14 @@ export default function ConfigScreen({ config, setConfig, onStart, onViewHistory
             <>
               <div className="config-screen__section">
                 <div className="config-screen__section-header">
-                  <h3 className="config-screen__section-label">1. Choose a Category</h3>
+                  <h2 className="config-screen__section-label">Choose a category</h2>
                   <span className="config-screen__section-count">{categories.length + 1} topics</span>
                 </div>
                 <div className="config-screen__categories">
                   <button
                     type="button"
                     className={`category-chip ${config.category === 'all' ? 'category-chip--active' : ''}`}
+                    aria-pressed={config.category === 'all'}
                     onClick={() => setConfig({ ...config, category: 'all' })}
                   >
                     <span className="category-chip__icon">🎲</span>
@@ -249,17 +252,12 @@ export default function ConfigScreen({ config, setConfig, onStart, onViewHistory
                       key={cat.id}
                       type="button"
                       className={`category-chip ${config.category === cat.id ? 'category-chip--active' : ''}`}
-                      style={
-                        config.category === cat.id
-                          ? { '--chip-color': cat.color, borderColor: cat.color }
-                          : {}
-                      }
+                      aria-pressed={config.category === cat.id}
                       onClick={() => setConfig({ ...config, category: cat.id })}
                     >
                       <span className="category-chip__icon">{cat.icon}</span>
                       <div className="category-chip__info">
                         <span className="category-chip__title">{cat.name}</span>
-                        <span className="category-chip__subtitle">Topic questions</span>
                       </div>
                     </button>
                   ))}
@@ -267,13 +265,14 @@ export default function ConfigScreen({ config, setConfig, onStart, onViewHistory
               </div>
 
               <div className="config-screen__section">
-                <h3 className="config-screen__section-label">2. Select Difficulty</h3>
+                <h2 className="config-screen__section-label">Select difficulty</h2>
                 <div className="config-screen__difficulties">
                   {difficultyLevels.map((d) => (
                     <button
                       key={d.id}
                       type="button"
                       className={`difficulty-chip ${config.difficulty === d.id ? 'difficulty-chip--active' : ''}`}
+                      aria-pressed={config.difficulty === d.id}
                       onClick={() => setConfig({ ...config, difficulty: d.id })}
                     >
                       <span className="difficulty-chip__name">{d.name}</span>
@@ -284,13 +283,14 @@ export default function ConfigScreen({ config, setConfig, onStart, onViewHistory
               </div>
 
               <div className="config-screen__section">
-                <h3 className="config-screen__section-label">3. Number of Questions</h3>
+                <h2 className="config-screen__section-label">Number of questions</h2>
                 <div className="config-screen__counts">
                   {questionCounts.map((n) => (
                     <button
                       key={n}
                       type="button"
                       className={`count-chip ${config.count === n ? 'count-chip--active' : ''}`}
+                      aria-pressed={config.count === n}
                       onClick={() => setConfig({ ...config, count: n })}
                     >
                       <span className="count-chip__num">{n}</span>
@@ -318,27 +318,27 @@ export default function ConfigScreen({ config, setConfig, onStart, onViewHistory
             <div className="qm-api-config-box">
               <div className="qm-api-badge-pill">
                 <GlobeIcon />
-                <span>Consuming Open Trivia DB REST API with Axios</span>
+                <span>Open Trivia DB via Axios</span>
               </div>
 
               <div className="config-screen__section">
                 <div className="config-screen__section-header">
-                  <h3 className="config-screen__section-label">1. Select Online Trivia Category</h3>
+                  <h2 className="config-screen__section-label">Choose an online category</h2>
                   <span className="config-screen__section-count">{OPEN_TDB_CATEGORIES.length} topics</span>
                 </div>
-                <div className="config-screen__categories qm-api-category-grid">
+                <div className="config-screen__categories">
                   {OPEN_TDB_CATEGORIES.map((cat) => (
                     <button
                       key={cat.id}
                       type="button"
                       className={`category-chip ${apiCategory === cat.id ? 'category-chip--active' : ''}`}
+                      aria-pressed={apiCategory === cat.id}
                       onClick={() => setApiCategory(cat.id)}
                       title={cat.name}
                     >
                       <span className="category-chip__icon">{cat.icon || '🌐'}</span>
                       <div className="category-chip__info">
                         <span className="category-chip__title">{cat.name}</span>
-                        <span className="category-chip__subtitle">{cat.subtitle || 'Topic questions'}</span>
                       </div>
                     </button>
                   ))}
@@ -346,7 +346,7 @@ export default function ConfigScreen({ config, setConfig, onStart, onViewHistory
               </div>
 
               <div className="config-screen__section">
-                <h3 className="config-screen__section-label">2. Target Difficulty</h3>
+                <h2 className="config-screen__section-label">Select difficulty</h2>
                 <div className="config-screen__difficulties">
                   {[
                     { id: 'all', name: 'Any Difficulty', desc: 'Mixed challenge' },
@@ -358,6 +358,7 @@ export default function ConfigScreen({ config, setConfig, onStart, onViewHistory
                       key={d.id}
                       type="button"
                       className={`difficulty-chip ${apiDifficulty === d.id ? 'difficulty-chip--active' : ''}`}
+                      aria-pressed={apiDifficulty === d.id}
                       onClick={() => setApiDifficulty(d.id)}
                     >
                       <span className="difficulty-chip__name">{d.name}</span>
@@ -368,13 +369,14 @@ export default function ConfigScreen({ config, setConfig, onStart, onViewHistory
               </div>
 
               <div className="config-screen__section">
-                <h3 className="config-screen__section-label">3. Questions to Fetch via API</h3>
+                <h2 className="config-screen__section-label">Number of questions</h2>
                 <div className="config-screen__counts">
                   {[5, 10, 15, 20].map((n) => (
                     <button
                       key={n}
                       type="button"
                       className={`count-chip ${apiAmount === n ? 'count-chip--active' : ''}`}
+                      aria-pressed={apiAmount === n}
                       onClick={() => setApiAmount(n)}
                     >
                       <span className="count-chip__num">{n}</span>
@@ -422,11 +424,11 @@ export default function ConfigScreen({ config, setConfig, onStart, onViewHistory
                 {isLoadingApi ? (
                   <>
                     <RefreshCw className="spin qm-btn-spinner" />
-                    <span>Fetching Questions via Axios...</span>
+                    <span>Fetching questions…</span>
                   </>
                 ) : (
                   <>
-                    <span>Fetch & Launch Online Quiz</span>
+                    <span>Start Online Quiz</span>
                     <ArrowRight className="config-screen__start-icon" />
                   </>
                 )}
